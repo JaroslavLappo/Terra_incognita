@@ -21,7 +21,7 @@ void LogInit(void)
 
 /* 
  * Work with system time alternative
- * Sykosevn
+ * Syukosevn
  * I think it could work everywhere(WIN/LINUX)
  */
 
@@ -31,9 +31,8 @@ void LogInit(void)
 
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  printf ("New game started in %02i.%02i.%i at %02d:%02d\n", timeinfo->tm_mday, timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min);
-
- */
+  logprintf ("New game started in %02d.%02d.%d at %02d:%02d\n", timeinfo->tm_mday, timeinfo->tm_mon + 1, timeinfo->tm_year + 1900, timeinfo->tm_hour, timeinfo->tm_min);
+*/
 
   logprintf("\n\n\n\n==============================================\n");
   logprintf(HELLO);
