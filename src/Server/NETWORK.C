@@ -16,11 +16,8 @@ GAME *AcceptPlayers( int players_number )
   SOCKET server_socket;
   struct sockaddr_in serv_addr;
   char hello[HELLO_LENGTH] = HELLO;
-  char name[MESSAGE_LENGTH] = "Your name:";
 
   LogInit();
-
-  name[MESSAGE_LENGTH - 1] = ASKING;
 
   if ((game = malloc(sizeof(GAME))) == NULL)
     return NULL;
@@ -49,7 +46,7 @@ GAME *AcceptPlayers( int players_number )
     game->Players[i].Socket = accept(server_socket, (struct sockaddr*)&client_addr, &size_client_addr);
 
     send(game->Players[i].Socket, hello, sizeof(hello), 0);
-    send(game->Players[i].Socket, name, sizeof(name), 0);
+    AskPlayer(game->Players[i], "Your name:");
   }
 
   game->Players_number = players_number;
@@ -83,31 +80,38 @@ GAME *AcceptPlayers( int players_number )
 void InformPlayers( GAME Game, char *Message )
 {
   int i;
+  char Data[MESSAGE_LENGTH];
 
-  Message[MESSAGE_LENGTH - 1] = NO_FLAG;
+  strcpy(Data, Message);
+
+  Data[MESSAGE_LENGTH - 1] = NO_FLAG;
 
   for (i = 0; i < Game.Players_number; i++)
-    send(Game.Players[i].Socket, Message, MESSAGE_LENGTH, 0);
+    send(Game.Players[i].Socket, Data, MESSAGE_LENGTH, 0);
 } /* End of 'InformPlayers' function */
 
 /* send message to one player with ASKING flag and receive answer from he */
 char *AskPlayer( PLAYER Player, char *Message )
 {
   char *answer;
+  char Data[MESSAGE_LENGTH];
 
-  Message[MESSAGE_LENGTH - 1] = ASKING;
+  strcpy(Data, Message);
 
-  send(Player.Socket, Message, MESSAGE_LENGTH, 0);
+  Data[MESSAGE_LENGTH - 1] = ASKING;
 
   if ((answer = malloc(MESSAGE_LENGTH)) == NULL)
     return NULL;
+
+
+  send(Player.Socket, Data, MESSAGE_LENGTH, 0);
 
   recv(Player.Socket, answer, MESSAGE_LENGTH, 0);
 
   return answer;
 } /* End of 'AskPlayer' function */
 
-/* send message to every player with GAME_OVER flag and close their sockets */
+/* send to every player message with GAME_OVER flag and close their sockets */
 void EndGame( GAME Game )
 {
   int i;
