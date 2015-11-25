@@ -7,4 +7,8 @@
 #include "command.h"
 #include "interface.h"
 
+#ifdef _WIN32
 #include "..\Common\TI_def.h"
+#elif linux
+#include "../Common/TI_def.h"
+#endif
