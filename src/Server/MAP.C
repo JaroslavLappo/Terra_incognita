@@ -22,10 +22,11 @@ MAP GenerateMap( PROPERTIES Properties )
   if ((map.Map = malloc((2 * map.H + 1) * (2 * map.W + 1))) == NULL)
     return map;
 
-  for (i = 0; i <= 2 * Properties.H; i++)
+  for (i = 0; i < 2 * Properties.H + 1; i++)
   {
-    for (j = 0; j <= 2 * Properties.W; j++)
+    for (j = 0; j < 2 * Properties.W + 1; j++)
       map.Map[j + i * Properties.H] = getc(OF);
+    malloc(0);
     getc(OF);
   }
 
