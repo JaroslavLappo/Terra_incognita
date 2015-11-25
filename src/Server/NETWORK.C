@@ -30,6 +30,8 @@ GAME *AcceptPlayers( int players_number )
     return NULL;
   }
 
+  game->Map = GenerateMap(ReadProp());
+
   WSAStartup(0x202, &wsa_data);
 
   server_socket = socket(AF_INET, SOCK_STREAM, 0);

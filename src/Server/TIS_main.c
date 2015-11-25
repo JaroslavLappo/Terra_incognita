@@ -8,17 +8,14 @@
 
 int GameSession( int players_number )
 {
-  MAP labyrinth;
   GAME *game;
 
   LogInit();
 
-  labyrinth = GenerateMap(ReadProp());
-
   if ((game = AcceptPlayers(players_number)) == NULL)
   {
 /*    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", 0);*/
-    return 239;
+    return 0x239;
   }
 
   SendPropInfo(*game);
@@ -29,7 +26,7 @@ int GameSession( int players_number )
     RESULT result;
 
     command = ReadCommand(*game);
-    result = CheckResult(&labyrinth, command, game);
+    result = CheckResult(&(game->Map), command, game);
     SendResult(*game, result);
     game->Current_player = (game->Current_player + 1) % game->Players_number;
 
@@ -38,7 +35,7 @@ int GameSession( int players_number )
       EndGame(*game);
       free(game->Players);
       free(game);
-      return 30;
+      return 0x30;
     }
   }
 }
