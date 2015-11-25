@@ -2,7 +2,6 @@
 /* Creation time:  18:08 23.11.2015 */
 /* Last edit time: 18:08 23.11.2015 */
 
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <time.h>
 

@@ -14,6 +14,7 @@ int GameSession( int players_number )
   LogInit();
 
   labyrinth = GenerateMap(ReadProp());
+
   if ((game = AcceptPlayers(players_number)) == NULL)
   {
 /*    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", 0);*/
