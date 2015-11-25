@@ -1,15 +1,35 @@
 #include <stdio.h>
-#include <conio.h>
+#include <memory.h>
 
+#ifdef _WIN32
 #include <WinSock2.h>
+#endif
 
+#ifdef linux
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+typedef int SOCKET;
+
+#endif
+
+
+#ifdef _WIN32
 #include "..\Common\TI_def.h"
+#elif linux
+#include "../Common/TI_def.h"
+#endif
 
 #define HELLO "Terra Incognita Client v" VERSION "\n"
 
 void main( void )
 {
+#ifdef _WIN32
   WSADATA wsaData;
+#endif
   SOCKET s;
   struct sockaddr_in serv_addr;
   int i = 0;
@@ -19,7 +39,9 @@ void main( void )
   char hello[HELLO_LENGTH];
   int stop = 0;
 
+#ifdef _WIN32
   WSAStartup(0x202, &wsaData);
+#endif
 
   printf(HELLO);
 
@@ -34,7 +56,7 @@ void main( void )
   memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(PORT);
-  serv_addr.sin_addr.S_un.S_addr = inet_addr(IP);
+  serv_addr.sin_addr.s_addr = inet_addr(IP);
   connect(s, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
   recv(s, hello, sizeof(hello), 0);
@@ -42,7 +64,10 @@ void main( void )
     printf("Connected\n");
   else
   {
+#ifdef _WIN32
     MessageBox(NULL, "Vse ochen ploho((", "Error while connecting", MB_ICONERROR);
+#endif
+    printf("Vse ochen ploho((\n");
     return;
   }
 
@@ -53,7 +78,7 @@ void main( void )
     char message[MESSAGE_LENGTH];
 
     recv(s, message, sizeof(message), 0);
-    printf(message);
+    printf("%s", message);
     if (message[MESSAGE_LENGTH - 1] == ASKING)
     {
       gets(message);
@@ -63,7 +88,7 @@ void main( void )
     if (message[MESSAGE_LENGTH - 1] == GAME_OVER)
     {
       printf("Press any key...");
-      _getch();
+      getchar();
       stop = 1;
     }
   }
