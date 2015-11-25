@@ -30,48 +30,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Server\TIS_main.c">
+    <ClCompile Include="..\..\..\src\Server\TIS_main.c">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Server\COMMAND.C">
+    <ClCompile Include="..\..\..\src\Server\COMMAND.C">
       <Filter>Файлы исходного кода\Command interpretation support</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Server\INTERFACE.C">
+    <ClCompile Include="..\..\..\src\Server\INTERFACE.C">
       <Filter>Файлы исходного кода\Clinet interface support</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Server\LOG.C">
+    <ClCompile Include="..\..\..\src\Server\LOG.C">
       <Filter>Файлы исходного кода\Log support</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Server\NETWORK.C">
+    <ClCompile Include="..\..\..\src\Server\NETWORK.C">
       <Filter>Файлы исходного кода\Network support</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Server\MAP.C">
+    <ClCompile Include="..\..\..\src\Server\MAP.C">
       <Filter>Файлы исходного кода\Map support</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Server\TIS.h">
+    <ClInclude Include="..\..\..\src\Server\TIS.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\COMMAND.H">
+    <ClInclude Include="..\..\..\src\Server\COMMAND.H">
       <Filter>Файлы исходного кода\Command interpretation support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\INTERFACE.H">
+    <ClInclude Include="..\..\..\src\Server\INTERFACE.H">
       <Filter>Файлы исходного кода\Clinet interface support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\LOG.H">
+    <ClInclude Include="..\..\..\src\Server\LOG.H">
       <Filter>Файлы исходного кода\Log support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\NETDEF.H">
+    <ClInclude Include="..\..\..\src\Server\NETDEF.H">
       <Filter>Файлы исходного кода\Network support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\NETWORK.H">
+    <ClInclude Include="..\..\..\src\Server\NETWORK.H">
       <Filter>Файлы исходного кода\Network support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Server\MAP.H">
+    <ClInclude Include="..\..\..\src\Server\MAP.H">
       <Filter>Файлы исходного кода\Map support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Common\TI_def.h">
+    <ClInclude Include="..\..\..\src\Common\TI_def.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
   </ItemGroup>
