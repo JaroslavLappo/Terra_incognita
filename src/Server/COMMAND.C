@@ -199,31 +199,31 @@ RESULT CheckResult(MAP *Labyrinth, COMMAND Command, GAME *Game)
       dy = 0;
     }
 
-    if (Labyrinth->Map[player->X + dx + (player->Y + dy) * Labyrinth->H] == VOID_PLACE || Labyrinth->Map[player->X + dx + (player->Y + dy) * Labyrinth->H] == EXIT)
+    if (Labyrinth->Map[player->X + dx + (player->Y + dy) * (2 * Labyrinth->H + 1)] == VOID_PLACE || Labyrinth->Map[player->X + dx + (player->Y + dy) * (2 * Labyrinth->H + 1)] == EXIT)
     {
       player->X += 2 * dx;
       player->Y += 2 * dy;
       RetValue.Result = RESULT_WALK;
 
-      if (Labyrinth->Map[player->X + player->Y * Labyrinth->H] == ARMORY)
+      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == ARMORY)
       {
         player->Bullets++;
         player->Knives++;
         player->TNT++;
         RetValue.Result = RESULT_ARMORY_REACHED;
       }
-      if (Labyrinth->Map[player->X + player->Y * Labyrinth->H] == HEALER)
+      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == HEALER)
       {
         player->HealthPoints = 1;
         RetValue.Result = RESULT_HEALER_REACHED;
       }
-      if (Labyrinth->Map[player->X + player->Y * Labyrinth->H] == TREASURE && player->HealthPoints == 1)
+      if (Labyrinth->Map[player->X - dx + (player->Y - dy) * (2 * Labyrinth->H + 1)] == TREASURE && player->HealthPoints == 1)
       {
         player->HaveTreasure = 1;
-        Labyrinth->Map[player->X + player->Y * Labyrinth->H] = EMPTY_PLACE;
+        Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] = EMPTY_PLACE;
         RetValue.Result = RESULT_TREASURE_REACHED;
       }
-      if (Labyrinth->Map[player->X + player->Y * Labyrinth->H] == EXIT)
+      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == EXIT)
       {
         if (player->HaveTreasure)
           RetValue.Result = RESULT_WINNER;
