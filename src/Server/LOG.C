@@ -61,3 +61,5 @@ void logprintf(char *fmt, ...)
 
   fclose(Log);
 }
+
+/* END OF 'LOG.C' FILE */
