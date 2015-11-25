@@ -6,17 +6,19 @@
 
 #include "TIS.h"
 
-
-DWORD WINAPI GameSession(LPVOID lpThreadParameter)
+int GameSession( int players_number )
 {
   MAP labyrinth;
   GAME *game;
-  int players_number = *(int *)lpThreadParameter;
 
   LogInit();
 
   labyrinth = GenerateMap(ReadProp());
-  game = AcceptPlayers(players_number);
+  if ((game = AcceptPlayers(players_number)) == NULL)
+  {
+    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
+    return 239;
+  }
 
   SendPropInfo(*game);
 
@@ -33,22 +35,33 @@ DWORD WINAPI GameSession(LPVOID lpThreadParameter)
     if (result.Result == RESULT_WINNER)
     {
       EndGame(*game);
+      free(game->Players);
       free(game);
-      free(lpThreadParameter);
-      return 0;
+      return 30;
     }
   }
 }
 
-/*DWORD WINAPI UserSession(LPVOID lpThreadParameter)
+#if 0
+
+DWORD WINAPI WinThreadGameSession( LPVOID lpThreadParameter )
+{
+  int players_number = *(int *)lpThreadParameter;
+
+  GameSession(players_number);
+
+  free(lpThreadParameter);
+}
+
+DWORD WINAPI WinThreadUserSession(LPVOID lpThreadParameter)
 {
   int *players_num = malloc(sizeof(int));
-  /* Типа получаем по ssh команды всякие, карту поменять, настроить кол-во игроков */
+  /* Kak-budto poluchaem po ssh komandy vsyakie, kartu pomenyat', nastroit' kol-vo igrokov */
 
-  /*players_num = 3;
+  players_num = 3;
 
-  CreateThread(NULL, 1000, GameSession, players_num, 0, NULL); /* Создаём thread для игры и типа отключаем ssh-клиента */
-  /*return 0;
+  CreateThread(NULL, 1000, GameSession, players_num, 0, NULL); /* Sozdaem thread dlya igry i kak-budto otkluchaem ssh-klienta */
+  return 0;
 }
 
 int main( void )
@@ -57,20 +70,18 @@ int main( void )
 
   while(1)
   {
-    /* Типа ожидаем подключения ssh-клиента */
-/*  if (first)
+    /* Kak budto ozhidaem podkluchenia ssh-klienta */
+  if (first)
     {
-      CreateThread(NULL, 1000, UserSession, NULL, 0, NULL); /* Создаём thread для данного клиента */
-/*      first = 0;
+      CreateThread(NULL, 1000, UserSession, NULL, 0, NULL); /* sozdaem thread dlya dannogo klienta */
+      first = 0;
     }
   }
 } */
 
+#endif
+
 int main( void )
 {
-  int *players_num = malloc(sizeof(int));
-
-  *players_num = 3;
-
-  GameSession(players_num);
+  GameSession(3);
 }
