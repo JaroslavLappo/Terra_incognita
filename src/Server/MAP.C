@@ -17,7 +17,7 @@ MAP GenerateMap( PROPERTIES Properties )
   if ((OF = fopen("labyrinth.map", "rt")) == NULL)
     return map;
 
-  MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
+  fclose(OF);
 
   if ((map.Map = malloc(map.H * map.W)) == NULL)
     return map;
@@ -25,8 +25,8 @@ MAP GenerateMap( PROPERTIES Properties )
   for (i = 0; i <= 2 * Properties.H; i++)
   {
     for (j = 0; j <= 2 * Properties.W; j++)
-      map.Map[j + i * Properties.H] = fgetc(OF);
-    fgetc(OF);
+      map.Map[j + i * Properties.H] = getc(OF);
+    getc(OF);
   }
 
   fclose(OF);

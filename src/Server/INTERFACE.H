@@ -5,7 +5,7 @@
 #ifndef __INTERFACE_H_
 #define __INTERFACE_H_
 
-#include "network.h"
+#include "TIS.h"
 
 #include <winsock2.h>
 
