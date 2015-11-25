@@ -40,7 +40,8 @@ PROPERTIES ReadProp( void )
   PROPERTIES RetValue;
   FILE *OF;
 
-  OF = fopen("server.cfg", "rt");
+  if(OF = fopen("server.cfg", "rt") == NULL)
+	  exit(2390);
 
   fscanf(OF, "Type:%i\n", &RetValue.Gametype);
   fscanf(OF, "Width:%i\n", &RetValue.W);
