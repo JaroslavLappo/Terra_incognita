@@ -76,7 +76,7 @@ GAME *AcceptPlayers( int players_number )
     {
       game->Players[i].X = rand() % game->Map.W;
       game->Players[i].Y = rand() % game->Map.H;
-    } while (game->Map.Map[game->Players[i].X + game->Map.W * game->Players[i].Y]);
+    } while (game->Map.Map[game->Players[i].X + game->Map.W * game->Players[i].Y] != VOID_PLACE);
 
     printf("Player position: x:%i y:%i\n\n", game->Players[i].X, game->Players[i].Y);
   }

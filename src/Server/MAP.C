@@ -5,6 +5,50 @@
 #include <stdio.h>
 #include "TIS.h"
 
+CELL CharToCell( char ch )
+{
+  if (ch == (char)0xdb)
+    return WALL;
+
+  if (ch == '!')
+    return EXIT;
+
+  if (ch == 'A')
+    return ARMORY;
+
+  if (ch == 'H')
+    return HEALER;
+
+  if (ch == '*')
+    return TREASURE;
+
+  if (ch == 'S')
+    return RIVER_START;
+
+  if (ch == 'E')
+    return RIVER_END;
+
+  if (ch == 'U')
+    return RIVER_UP;
+
+  if (ch == 'R')
+    return RIVER_RIGHT;
+
+  if (ch == 'D')
+    return RIVER_DOWN;
+
+  if (ch == 'L')
+    return RIVER_LEFT;
+
+  if (ch == '.')
+    return EMPTY_PLACE;
+
+  if (ch == ' ')
+    return VOID_PLACE;
+
+  return 0x239;
+}
+
 MAP GenerateMap( PROPERTIES Properties )
 {
   int i, j;
@@ -17,16 +61,14 @@ MAP GenerateMap( PROPERTIES Properties )
   if ((OF = fopen("labyrinth.map", "rt")) == NULL)
     return map;
 
-  fclose(OF);
-
-  if ((map.Map = malloc((2 * map.H + 1) * (2 * map.W + 1))) == NULL)
+  if ((map.Map = malloc(sizeof(CELL) * (2 * map.H + 1) * (2 * map.W + 1))) == NULL)
     return map;
 
   for (i = 0; i < 2 * Properties.H + 1; i++)
   {
     for (j = 0; j < 2 * Properties.W + 1; j++)
-      map.Map[j + i * Properties.H] = getc(OF);
-    malloc(0);
+      map.Map[j + i * (2 * Properties.H + 1)] = CharToCell(getc(OF));
+
     getc(OF);
   }
 
