@@ -61,6 +61,7 @@ GAME *AcceptPlayers( int players_number )
   {
     recv(game->Players[i].Socket, game->Players[i].Name, sizeof(game->Players[i].Name), 0);
     logprintf("Player accepted:\n  number - %i\n  name - %s\n", i, game->Players[i].Name);
+    printf("Player accepted:\n  number - %i\n  name - %s\n", i, game->Players[i].Name);
 
     game->Players[i].Wounded = 0;
     game->Players[i].HaveTreasure = 0;
@@ -74,6 +75,8 @@ GAME *AcceptPlayers( int players_number )
       game->Players[i].X = rand() % game->Map.W;
       game->Players[i].Y = rand() % game->Map.H;
     } while (game->Map.Map[game->Players[i].X + game->Map.W * game->Players[i].Y]);
+
+    printf("Player position: x:%i y:%i\n\n", game->Players[i].X, game->Players[i].Y);
   }
 
   game->Players_number = players_number;
