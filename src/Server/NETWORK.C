@@ -20,10 +20,14 @@ GAME *AcceptPlayers( int players_number )
   LogInit();
 
   if ((game = malloc(sizeof(GAME))) == NULL)
+  {
+    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
     return NULL;
+  }
 
   if ((game->Players = malloc(sizeof(PLAYER) * players_number)) == NULL)
   {
+    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
     free(game);
     return NULL;
   }
@@ -40,13 +44,17 @@ GAME *AcceptPlayers( int players_number )
 
   for (i = 0; i < players_number; i++)
   {
+    char *Name;
+
     printf("\nCreating new connection.\n");
     struct sockaddr_in client_addr;
     int size_client_addr = sizeof(client_addr);
     game->Players[i].Socket = accept(server_socket, (struct sockaddr*)&client_addr, &size_client_addr);
 
     send(game->Players[i].Socket, hello, sizeof(hello), 0);
-    AskPlayer(game->Players[i], "Your name:");
+    Name = AskPlayer(game->Players[i], "Your name:");
+    strcpy(game->Players[i].Name, Name);
+    free(Name);
   }
 
   game->Players_number = players_number;

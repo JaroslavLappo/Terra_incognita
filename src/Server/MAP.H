@@ -13,29 +13,31 @@ typedef struct
   int Gametype;
 } PROPERTIES;
 
+typedef enum
+{
+  WALL = 0xdb, /* wall character */
+  EXIT = '!', /* exit character */
+
+  ARMORY = 'A',
+  HEALER = 'H',
+  TREASURE = '*',
+
+  RIVER_START = 'S',
+  RIVER_END = 'E',
+
+  RIVER_UP = 'U',
+  RIVER_RIGHT = 'R',
+  RIVER_DOWN = 'D',
+  RIVER_LEFT = 'L',
+
+  EMPTY_PLACE = '.',
+  VOID_PLACE = ' ' /* not a wall */
+} CELL;
+
 typedef struct
 {
   PROPERTIES Properties;
-  enum 
-  {
-    WALL = 0xdb, /* wall character */
-    EXIT = '!', /* exit character */
-
-    ARMORY = 'A',
-    HEALER = 'H',
-    TREASURE = '*',
-
-    RIVER_START = 'S',
-    RIVER_END = 'E',
-
-    RIVER_UP = 'U',
-    RIVER_RIGHT = 'R',
-    RIVER_DOWN = 'D',
-    RIVER_LEFT = 'L',
-
-    EMPTY_PLACE = '.',
-    VOID_PLACE = ' ' /* not a wall */
-  } *Map;
+  CELL *Map;
   int H, W;
 } MAP;
 
