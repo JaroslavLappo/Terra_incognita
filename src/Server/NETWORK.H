@@ -7,11 +7,11 @@
 
 #include "TIS.h"
 
-#if defined(_WIN32) && defined(_LINUX)
-#error Ty vparivaesh mne kakuju-to dich'.
+#if defined(_WIN32) && defined(linux)
+#error Ty vparivaesh mne kakuju-to dich.
 #endif
 
-#if !defined(_WIN32) && !defined(_LINUX)
+#if !defined(_WIN32) && !defined(linux)
 #error You need windows or linux to compile this program
 #endif
 
@@ -19,8 +19,15 @@
 #include <winsock2.h>
 #endif
 
-#ifdef _LINUX
+#ifdef linux
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+typedef int SOCKET;
+
 #endif
 
 /* connect to players */

@@ -7,7 +7,20 @@
 
 #include "TIS.h"
 
+#ifdef _WIN32
 #include <winsock2.h>
+#endif
+
+#ifdef linux
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+typedef int SOCKET;
+
+#endif
 
 typedef struct
 {
