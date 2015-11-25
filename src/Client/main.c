@@ -49,6 +49,10 @@ void main( void )
   while ((ch = getchar()) != '\n')
     IP[i++] = ch;
   IP[i] = 0;
+  
+  /* Check to find a Null string */
+  if (ch == NULL)
+    return 0;
 
   printf("Connecting to IP:%s\n", IP);
 
