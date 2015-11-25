@@ -8,11 +8,11 @@
 #include "TIS.h"
 
 #if defined(_WIN32) && defined(_LINUX)
-#error "Ты впариваешь мне какую-то дичь."
+#error Ty vparivaesh mne kakuju-to dich'.
 #endif
 
 #if !defined(_WIN32) && !defined(_LINUX)
-#error "You need windows or linux to compile this program"
+#error You need windows or linux to compile this program
 #endif
 
 #ifdef _WIN32
