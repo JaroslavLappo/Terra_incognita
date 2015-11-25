@@ -72,6 +72,8 @@ COMMAND ReadCommand( GAME Game )
     command.Command = COMMAND_KNIFE;
   }
 
+  free(answer);
+
   return command;
 } /* End of 'ReadCommand' function */
 
