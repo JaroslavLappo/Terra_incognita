@@ -17,8 +17,6 @@ GAME *AcceptPlayers( int players_number )
   struct sockaddr_in serv_addr;
   char hello[HELLO_LENGTH] = HELLO;
 
-  LogInit();
-
   if ((game = malloc(sizeof(GAME))) == NULL)
   {
     MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
@@ -44,7 +42,9 @@ GAME *AcceptPlayers( int players_number )
 
   for (i = 0; i < players_number; i++)
   {
-    char *Name;
+    char question[MESSAGE_LENGTH] = "Your name:";
+
+    question[MESSAGE_LENGTH - 1] = ASKING;
 
     printf("\nCreating new connection.\n");
     struct sockaddr_in client_addr;
@@ -52,9 +52,7 @@ GAME *AcceptPlayers( int players_number )
     game->Players[i].Socket = accept(server_socket, (struct sockaddr*)&client_addr, &size_client_addr);
 
     send(game->Players[i].Socket, hello, sizeof(hello), 0);
-    Name = AskPlayer(game->Players[i], "Your name:");
-    strcpy(game->Players[i].Name, Name);
-    free(Name);
+    send(game->Players[i].Socket, question, sizeof(question), 0);
   }
 
   game->Players_number = players_number;
