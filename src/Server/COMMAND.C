@@ -3,6 +3,7 @@
 /* Last edit time: 17:42 23.11.2015 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "TIS.h"
 
@@ -78,209 +79,142 @@ COMMAND ReadCommand( GAME Game )
 } /* End of 'ReadCommand' function */
 
 /* Execute players command */
-RESULT CheckResult(MAP *Labyrinth, COMMAND Command, GAME *Game)
+RESULT CheckResult(GAME *Game, COMMAND Command)
 {
-  RESULT RetValue;
-  PLAYER *player = &Game->Players[Game->Current_player];
+  RESULT result;
+  int width = Game->Map.W;
+  int height = Game->Map.H;
 
-  RetValue.Player = -1;
-  if (Command.Command == COMMAND_SHOOT)
-  {
-    if (player->Bullets == 0)
-    {
-      RetValue.Result = RESULT_NOT_ENOUGH_BULLETS;
-      return RetValue;
-    }
-    else
-    {
-      int i, j;
-      int dx, dy;
-      int shooted = -1;
+  result.Result = RESULT_UNKNOWN_COMMAND;
+  result.Player = -1;
 
-      player->Bullets--;
-      if (Command.Destination == DESTINATION_DOWN)
-      {
-        dx = 0;
-        dy = 1;
-      }
-      if (Command.Destination == DESTINATION_UP)
-      {
-        dx = 0;
-        dy = -1;
-      }
-      if (Command.Destination == DESTINATION_RIGHT)
-      {
-        dx = 1;
-        dy = 0;
-      }
-      if (Command.Destination == DESTINATION_LEFT)
-      {
-        dx = -1;
-        dy = 0;
-      }
-      for (i = player->X + dx, j = player->Y + dy;
-        i >= 0 && j >= 0 && i <= Labyrinth->W && j <= Labyrinth->H && shooted == -1;
-        i += dx, j += dy)
-      {
-        int k;
+  if (Command.Command == COMMAND_UNKNOVN)
+    return result;
 
-        for (k = 0; k < Game->Players_number; k++)
-        {
-          if (Game->Players[k].X == i && Game->Players[k].Y == j)
-          {
-            Game->Players[k].HealthPoints -= 1;
-            shooted = k;
-            if (Game->Players[k].HaveTreasure)
-            {
-              Game->Players[k].HaveTreasure = 0;
-              Labyrinth->Map[i + j * Labyrinth->H] = TREASURE;
-            }
-          }
-        }
-      }
-      if (shooted != -1)
-      {
-        RetValue.Result = RESULT_SHOOTED;
-        RetValue.Player = shooted;
-      }
-      else
-      {
-        RetValue.Result = RESULT_MISSED;
-      }
-      return RetValue;
-    }
-  }
-  if (Command.Command == COMMAND_KNIFE)
-  {
-    int k;
-    int hit = -1;
-
-    for (k = 0; k < Game->Players_number; k++)
-    {
-      if (Game->Players[k].X == player->X && Game->Players[k].Y == player->Y)
-      {
-        Game->Players[k].HealthPoints -= 1;
-        hit = k;
-      }
-    }
-    if (hit != -1)
-    {
-      RetValue.Result = RESULT_HIT;
-      RetValue.Player = hit;
-    }
-    else
-    {
-      RetValue.Result = RESULT_MISSED;
-    }
-    return RetValue;
-  }
   if (Command.Command == COMMAND_WALK)
   {
+    int x = Game->Players[Game->Current_player].X;
+    int y = Game->Players[Game->Current_player].Y;
     int dx, dy;
+    int wall_pos, step_pos;
 
-    if (Command.Destination == DESTINATION_DOWN)
+    switch (Command.Destination)
     {
-      dx = 0;
-      dy = 1;
-    }
-    if (Command.Destination == DESTINATION_UP)
-    {
+    case DESTINATION_UP:
       dx = 0;
       dy = -1;
-    }
-    if (Command.Destination == DESTINATION_RIGHT)
-    {
+      break;
+    case DESTINATION_DOWN:
+      dx = 0;
+      dy = 1;
+      break;
+    case DESTINATION_RIGHT:
       dx = 1;
       dy = 0;
-    }
-    if (Command.Destination == DESTINATION_LEFT)
-    {
+      break;
+    case DESTINATION_LEFT:
       dx = -1;
+      dy = 0;
+      break;
+    default:
+      dx = 0;
       dy = 0;
     }
 
-    if (Labyrinth->Map[player->X + dx + (player->Y + dy) * (2 * Labyrinth->H + 1)] == VOID_PLACE || Labyrinth->Map[player->X + dx + (player->Y + dy) * (2 * Labyrinth->H + 1)] == EXIT)
-    {
-      player->X += 2 * dx;
-      player->Y += 2 * dy;
-      RetValue.Result = RESULT_WALK;
+    wall_pos = (x + dx) + (y + dy) * width; /* Cell that we step over */
+    step_pos = (x + 2 * dx) + (y + 2 * dy) * width; /* Cell that we step on */
 
-      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == ARMORY)
-      {
-        player->Bullets++;
-        player->Knives++;
-        player->TNT++;
-        RetValue.Result = RESULT_ARMORY_REACHED;
-      }
-      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == HEALER)
-      {
-        player->HealthPoints = 1;
-        RetValue.Result = RESULT_HEALER_REACHED;
-      }
-      if (Labyrinth->Map[player->X - dx + (player->Y - dy) * (2 * Labyrinth->H + 1)] == TREASURE && player->HealthPoints == 1)
-      {
-        player->HaveTreasure = 1;
-        Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] = EMPTY_PLACE;
-        RetValue.Result = RESULT_TREASURE_REACHED;
-      }
-      if (Labyrinth->Map[player->X + player->Y * (2 * Labyrinth->H + 1)] == EXIT)
-      {
-        if (player->HaveTreasure)
-          RetValue.Result = RESULT_WINNER;
-        else
-          RetValue.Result = RESULT_EXIT_FOUND;
-      }
-      return RetValue;
-    }
-    else
+    if (Game->Map.Map[wall_pos] == EXIT && Game->Players[Game->Current_player].HaveTreasure) /* if we have treasure and stepped over EXIT, we are winners */
     {
-      RetValue.Result = RESULT_WAY_IS_BLOCKED;
-      return RetValue;
+      result.Result = RESULT_WINNER;
+
+      return result;
     }
+
+    if (Game->Map.Map[wall_pos] != VOID_PLACE) /* if we cannot step over this */
+    {
+      result.Result = RESULT_WAY_IS_BLOCKED;
+
+      return result;
+    }
+
+    x += 2 * dx; /* we step over */
+    y += 2 * dy;
+
+    switch(Game->Map.Map[step_pos])
+    {
+    case ARMORY:
+      result.Result = RESULT_ARMORY_REACHED;
+      break;
+    case HEALER:
+      result.Result = RESULT_HEALER_REACHED;
+    default:
+      result.Result = RESULT_WALK;
+    }
+
+    return result;
   }
 
-  RetValue.Result = RESULT_UNKNOWN_COMMAND;
-  return RetValue;
+  if (Command.Command == COMMAND_KNIFE)
+  {
+    int i;
+    int victim = -1;
+
+    for (i = 0; i < Game->Players_number; i++)
+      if (Game->Players[i].X == Game->Players[Game->Current_player].X && Game->Players[i].Y == Game->Players[Game->Current_player].Y && i != Game->Current_player)
+      {
+        victim = i;
+        break;
+      }
+
+#ifdef SELF_HIT_WEAK
+    if (Game->Players[Game->Current_player].Wounded)
+      victim = Game->Current_player;
+#endif
+
+#ifdef SELF_HIT_RAND
+    if (victim == -1)
+    {
+      if (SELF_HIT_LONELY >= (double)rand() / RAND_MAX)
+        victim = Game->Current_player;
+    } else
+    {
+      if (SELF_HIT_NOT_LONELY >= (double)rand() / RAND_MAX)
+        victim = Game->Current_player;
+    }
+#endif
+
+#ifndef SELF_HIT_WEAK
+    if (Game->Players[Game->Current_player].Wounded)
+    {
+      result.Player = -1;
+      result.Result = RESULT_WEAK;
+    }
+#endif
+
+    if (victim != -1)
+    {
+      if (Game->Players[victim].HealthPoints > 0)
+        Game->Players[victim].HealthPoints--;
+
+      if (Game->Players[victim].HealthPoints == 0)
+        Game->Players[victim].Wounded = 1;
+
+      result.Player = victim;
+      result.Result = RESULT_HIT;
+
+      return result;
+    }
+
+    result.Result = RESULT_HIT_MISSED;
+
+    return;
+  }
+
+  if (Command.Command == COMMAND_SHOOT)
+  {
+    //TODO
+  }
 } /* End of 'CheckResult' function */
-
-/* Send result to all players */
-void SendResult(GAME Game, RESULT Result)
-{
-  char name[MESSAGE_LENGTH];
-  char subject[MESSAGE_LENGTH];
-  char message[MESSAGE_LENGTH];
-
-  sprintf(name, Game.Players[Game.Current_player].Name);
-
-  if (Result.Player != -1)
-    sprintf(subject, Game.Players[Result.Player].Name);
-
-  if (Result.Result == RESULT_UNKNOWN_COMMAND)
-    sprintf(message, "Unknown Command\n\n");
-  if (Result.Result == RESULT_NOT_ENOUGH_BULLETS)
-    sprintf(message, "%s tried to shoot, but he/she haven't enough bullets.\n\n", name);
-  if (Result.Result == RESULT_SHOOTED)
-    sprintf(message, "%s shot %s. %s now is wounded.\n\n", name, subject, subject);
-  if (Result.Result == RESULT_MISSED)
-    sprintf(message, "%s shot %s. %s now is wounded.\n\n", name, "void", "Void");
-  if (Result.Result == RESULT_HIT)
-    sprintf(message, "%s hit %s with a knife. %s now is wounded.\n\n", name, subject, subject);
-  if (Result.Result == RESULT_WAY_IS_BLOCKED)
-    sprintf(message, "Wall!\n\n");
-  if (Result.Result == RESULT_WALK)
-    sprintf(message, "Succesful walk.\n\n");
-  if (Result.Result == RESULT_ARMORY_REACHED)
-    sprintf(message, "Succesful walk and armory reached!\n\n");
-  if (Result.Result == RESULT_HEALER_REACHED)
-    sprintf(message, "Succesful walk and healer reached!\n\n");
-  if (Result.Result == RESULT_TREASURE_REACHED)
-    sprintf(message, "Treasure reached!\n\n");
-  if (Result.Result == RESULT_EXIT_FOUND)
-    sprintf(message, "Exit!\n\n");
-  if (Result.Result == RESULT_WINNER)
-    sprintf(message, "%s wins!\n\n", name);
-
-  InformPlayers(Game, message);
-} /* End of 'SendResult' function */
 
 /* END OF 'COMMAND.C' FILE */

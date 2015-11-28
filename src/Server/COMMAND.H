@@ -32,11 +32,14 @@ typedef struct
   {
     RESULT_UNKNOWN_COMMAND, /* nothing */
 
+    RESULT_WEAK, /* too wounded to shoot or hit */
+
     RESULT_NOT_ENOUGH_BULLETS, /* not enough bullets */
     RESULT_SHOOTED, /* succesful shot */
-    RESULT_MISSED, /* failure shot*/
+    RESULT_SHOT_MISSED, /* failure shot*/
 
     RESULT_HIT, /* succesful knife hit */
+    RESULT_HIT_MISSED, /* failure knife shot */
 
     RESULT_WAY_IS_BLOCKED, /* failure walking */
     RESULT_WALK, /* succesful walking */
@@ -55,7 +58,7 @@ typedef struct
 COMMAND ReadCommand(GAME Game);
 
 /* Execute players command */
-RESULT CheckResult(MAP *Labyrinth, COMMAND Command, GAME *Game);
+RESULT CheckResult(GAME *Game, COMMAND Command);
 
 /* Send result to all players */
 void SendResult(GAME Game, RESULT Result);
