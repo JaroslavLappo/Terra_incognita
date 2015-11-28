@@ -95,6 +95,7 @@
     <ClInclude Include="..\..\..\src\Server\MAP.H" />
     <ClInclude Include="..\..\..\src\Server\NETDEF.H" />
     <ClInclude Include="..\..\..\src\Server\NETWORK.H" />
+    <ClInclude Include="..\..\..\src\Server\SETTINGS.H" />
     <ClInclude Include="..\..\..\src\Server\TIS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
