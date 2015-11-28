@@ -1,5 +1,7 @@
 //#define DEBUG_WITH_CONSOLE
 
+#include "settings.h"
+
 #include "network.h"
 #include "netdef.h"
 #include "log.h"
