@@ -1,4 +1,4 @@
-#define PORT 3135
+#define PORT 30239
 
 #define HELLO_LENGTH 30
 #define MESSAGE_LENGTH 200
