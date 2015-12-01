@@ -26,7 +26,7 @@ int GameSession( int players_number )
     RESULT result;
 
     command = ReadCommand(*game);
-    result = CheckResult(&(game->Map), command, game);
+    result = CheckResult(game, command);
     SendResult(*game, result);
     game->Current_player = (game->Current_player + 1) % game->Players_number;
 

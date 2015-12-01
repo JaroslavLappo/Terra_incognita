@@ -82,8 +82,8 @@ COMMAND ReadCommand( GAME Game )
 RESULT CheckResult(GAME *Game, COMMAND Command)
 {
   RESULT result;
-  int width = Game->Map.W;
-  int height = Game->Map.H;
+  int width = Game->Map.W * 2 + 1;
+  int height = Game->Map.H * 2 + 1;
 
   result.Result = RESULT_UNKNOWN_COMMAND;
   result.Player = -1;
@@ -138,16 +138,27 @@ RESULT CheckResult(GAME *Game, COMMAND Command)
       return result;
     }
 
-    x += 2 * dx; /* we step over */
-    y += 2 * dy;
+    Game->Players[Game->Current_player].X += 2 * dx; /* we step over */
+    Game->Players[Game->Current_player].Y += 2 * dy;
 
     switch(Game->Map.Map[step_pos])
     {
     case ARMORY:
       result.Result = RESULT_ARMORY_REACHED;
+      Game->Players[Game->Current_player].Bullets = 3;
+      Game->Players[Game->Current_player].Knives = 3;
+      Game->Players[Game->Current_player].TNT = 3;
       break;
     case HEALER:
       result.Result = RESULT_HEALER_REACHED;
+      Game->Players[Game->Current_player].HealthPoints = 1;
+      Game->Players[Game->Current_player].Wounded = 0;
+      break;
+    case TREASURE:
+      result.Result = RESULT_TREASURE_REACHED;
+      Game->Players[Game->Current_player].HaveTreasure = 1;
+      Game->Map.Map[step_pos] = EMPTY_PLACE;
+      break;
     default:
       result.Result = RESULT_WALK;
     }
@@ -192,6 +203,13 @@ RESULT CheckResult(GAME *Game, COMMAND Command)
     }
 #endif
 
+    if (Game->Players[Game->Current_player].Knives <= 0)
+    {
+      result.Result = RESULT_NOT_ENOUGH_KNIVES;
+
+      return result;
+    }
+
     if (victim != -1)
     {
       if (Game->Players[victim].HealthPoints > 0)
@@ -199,6 +217,8 @@ RESULT CheckResult(GAME *Game, COMMAND Command)
 
       if (Game->Players[victim].HealthPoints == 0)
         Game->Players[victim].Wounded = 1;
+
+      Game->Players[Game->Current_player].Knives--;
 
       result.Player = victim;
       result.Result = RESULT_HIT;
@@ -208,7 +228,7 @@ RESULT CheckResult(GAME *Game, COMMAND Command)
 
     result.Result = RESULT_HIT_MISSED;
 
-    return;
+    return result;
   }
 
   if (Command.Command == COMMAND_SHOOT)
@@ -216,5 +236,47 @@ RESULT CheckResult(GAME *Game, COMMAND Command)
     //TODO
   }
 } /* End of 'CheckResult' function */
+
+/* Send result to all players */
+void SendResult(GAME Game, RESULT Result)
+{
+  char name[MESSAGE_LENGTH];
+  char subject[MESSAGE_LENGTH];
+  char message[MESSAGE_LENGTH];
+
+  sprintf(name, Game.Players[Game.Current_player].Name);
+
+  if (Result.Player != -1)
+    sprintf(subject, Game.Players[Result.Player].Name);
+
+  if (Result.Result == RESULT_UNKNOWN_COMMAND)
+    sprintf(message, "Unknown Command\n\n");
+  if (Result.Result == RESULT_NOT_ENOUGH_BULLETS)
+    sprintf(message, "%s tried to shoot, but he/she haven't enough bullets.\n\n", name);
+  if (Result.Result == RESULT_SHOOTED)
+    sprintf(message, "%s shot %s. %s now is wounded.\n\n", name, subject, subject);
+  if (Result.Result == RESULT_SHOT_MISSED)
+    sprintf(message, "%s shot %s. %s now is wounded.\n\n", name, "void", "Void");
+  if (Result.Result == RESULT_HIT)
+    sprintf(message, "%s hit %s with a knife. %s now is wounded.\n\n", name, subject, subject);
+  if (Result.Result == RESULT_HIT_MISSED)
+    sprintf(message, "%s hit %s with a knife. %s now is wounded.\n\n", name, "void", "Void");
+  if (Result.Result == RESULT_WAY_IS_BLOCKED)
+    sprintf(message, "Wall!\n\n");
+  if (Result.Result == RESULT_WALK)
+    sprintf(message, "Succesful walk.\n\n");
+  if (Result.Result == RESULT_ARMORY_REACHED)
+    sprintf(message, "Succesful walk and armory reached!\n\n");
+  if (Result.Result == RESULT_HEALER_REACHED)
+    sprintf(message, "Succesful walk and healer reached!\n\n");
+  if (Result.Result == RESULT_TREASURE_REACHED)
+    sprintf(message, "Treasure reached!\n\n");
+  if (Result.Result == RESULT_EXIT_FOUND)
+    sprintf(message, "Exit!\n\n");
+  if (Result.Result == RESULT_WINNER)
+    sprintf(message, "%s wins!\n\n", name);
+
+  InformPlayers(Game, message);
+} /* End of 'SendResult' function */
 
 /* END OF 'COMMAND.C' FILE */

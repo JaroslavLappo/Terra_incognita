@@ -38,6 +38,7 @@ typedef struct
     RESULT_SHOOTED, /* succesful shot */
     RESULT_SHOT_MISSED, /* failure shot*/
 
+    RESULT_NOT_ENOUGH_KNIVES, /* not enough bullets */
     RESULT_HIT, /* succesful knife hit */
     RESULT_HIT_MISSED, /* failure knife shot */
 
