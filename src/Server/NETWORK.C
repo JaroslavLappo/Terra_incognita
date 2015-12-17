@@ -57,6 +57,12 @@ GAME *AcceptPlayers( int players_number )
     send(game->Players[i].Socket, question, sizeof(question), 0);
   }
 
+#ifdef _WIN32
+  closesocket(server_socket);
+#else linux
+  close(server_socket);
+#endif
+
   game->Players_number = players_number;
 
   for (i = 0; i < players_number; i++)
@@ -93,7 +99,7 @@ void InformPlayers( GAME Game, char *Message )
   int i;
   char Data[MESSAGE_LENGTH];
 
-  strcpy(Data, Message);
+  strncpy(Data, Message, MESSAGE_LENGTH - 1);
 
   Data[MESSAGE_LENGTH - 1] = NO_FLAG;
 
@@ -107,7 +113,7 @@ char *AskPlayer( PLAYER Player, char *Message )
   char *answer;
   char Data[MESSAGE_LENGTH];
 
-  strcpy(Data, Message);
+  strncpy(Data, Message, MESSAGE_LENGTH - 1);
 
   Data[MESSAGE_LENGTH - 1] = ASKING;
 
@@ -154,15 +160,14 @@ void EndGame( GAME Game )
 #ifdef _WIN32
   for (i = 0; i < Game.Players_number; i++)
   {
-/*    shutdown(Game->Players[i].Socket, ???); */ /* I even don't know do we need this.*/
     closesocket(Game.Players[i].Socket);
   }
 #endif
 
-#ifdef _LINUX
+#ifdef linux
   for (i = 0; i < Game->Players_number; i++)
     close(Game.Players[i].Socket);
-#endif /* Linux support need */
+#endif
 
 } /* End of 'EndGame' function */
 
