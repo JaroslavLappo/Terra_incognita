@@ -3,6 +3,10 @@
 /* Last edit time: 18:08 23.11.2015 */
 
 #include <stdio.h>
+#ifdef _WIN32
+#  include <winsock2.h>
+#  include <ws2tcpip.h>
+#endif
 
 #include "TIS.h"
 
@@ -14,32 +18,45 @@ GAME *AcceptPlayers( int players_number )
   GAME *game;
   WSADATA wsa_data;
   SOCKET server_socket;
-  struct sockaddr_in serv_addr;
+  struct addrinfo serv_addr;
+  struct addrinfo *servres;
   char hello[HELLO_LENGTH] = HELLO;
 
   if ((game = malloc(sizeof(GAME))) == NULL)
   {
+#ifdef _WIN32
     MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
+#else
+	  fprintf(stderr, "Vse ochen ploho((");
+#endif
     return NULL;
   }
 
   if ((game->Players = malloc(sizeof(PLAYER) * players_number)) == NULL)
   {
-    MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
-    free(game);
+#ifdef _WIN32
+	  MessageBox(NULL, strerror(GetLastError()), "Vse ochen ploho((", MB_ICONERROR);
+#else
+	  fprintf(stderr, "Vse ochen ploho((");
+#endif
+	free(game);
     return NULL;
   }
 
   game->Map = GenerateMap(ReadProp());
 
+#ifdef _WIN32
   WSAStartup(0x202, &wsa_data);
+#endif
 
-  server_socket = socket(AF_INET, SOCK_STREAM, 0);
   memset(&serv_addr, 0, sizeof(serv_addr));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(PORT);
-  serv_addr.sin_addr.s_addr = 0;
-  bind(server_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+  serv_addr.ai_family = AF_UNSPEC;
+  serv_addr.ai_socktype = SOCK_STREAM;
+  serv_addr.ai_flags = AI_PASSIVE;
+  getaddrinfo(NULL, PORT, &serv_addr, &servres);
+
+  server_socket = socket(servres->ai_family, servres->ai_socktype, servres->ai_protocol);
+  bind(server_socket, servres->ai_addr, servres->ai_addrlen);
   listen(server_socket, players_number);
 
   for (i = 0; i < players_number; i++)
